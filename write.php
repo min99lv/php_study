@@ -1,6 +1,34 @@
+<?php
+    include_once "lib.php";
+
+    $post_id = isset($_GET['post_id']) ? (int)$_GET['post_id'] : 0;
+
+    // 게시글 수정
+
+    if(!$db) $db = db_conn();
+    $s_data = null;
+    if($post_id > 0){
+        $sql = "SELECT * FROM post WHERE post_id = {$post_id}";
+        $data = s_data($sql);
+
+        $title = $data["title"];
+        $content = $data["content"];
+        $nickname = $data["nickname"];
+        $password = $data["password"];
+        $created_at = $data["created_at"];
+        $created_ip = $data["created_ip"];
+        
+        //echo $created_ip;
+    }
+
+
+
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="EUC-KR">
     <title>글쓰기</title>
@@ -8,11 +36,40 @@
 </head>
 <style>
 </style>
-
 <body>
+<!-- 게시글 수정 -->
+    <?php if($post_id > 0){ ?>
+        <div class="container vh-100 d-flex justify-content-center align-items-center">
+        <form class="w-50" action="write_ok.php" method="post" onsubmit="return sub();">
+            <h3 class="text-center">게시글 수정</h3>
+            <div class="row mb-3">
+                <div class="col">
+                    <input type="text" class="form-control" id="nickname" name="nickname" placeholder="닉네임" required value=<?=$nickname?>>
+                    <span id="nicknameCheckMessage"></span>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" id="password" name="password" placeholder="비밀번호" required value=<?=$password?>>
+                    <span id="passwordCheckMessage"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" id="title" placeholder="제목" name="title" required required value=<?=$title?>>
+            </div>
+            <div class="mb-3">
+                <textarea class="form-control" id="content" name="content" placeholder="내용" rows="10" required required ><?=$content?></textarea>
+            </div>
+             <input type="hidden" title="post_id" name="post_id" value="<?=$post_id?>">
+            <button type="submit" class="btn btn-primary">등록</button>
+        </form>
+    </div>
+
+
+
+    <? } else {?>
+
     <div class="container vh-100 d-flex justify-content-center align-items-center">
         <form class="w-50" action="write_ok.php" method="post" onsubmit="return sub();">
-            <h3 class="text-center">글작성</h3>
+            <h3 class="text-center">게시글 작성</h3>
             <div class="row mb-3">
                 <div class="col">
                     <input type="text" class="form-control" id="nickname" name="nickname" placeholder="닉네임" required>
@@ -32,6 +89,8 @@
             <button type="submit" class="btn btn-primary">등록</button>
         </form>
     </div>
+
+    <? } ?>
 </body>
 
 </html>
@@ -50,20 +109,15 @@
     const titleInput = document.getElementById('title');
     const contentInput = document.getElementById('content');
     
-    // 제목 검증
-        if (titleInput.value.trim() === "") {
-            title_check = false;
-        } else {
-            title_check = true;
-        }
+    titleInput.addEventListener('input', () => {
+        title_check = titleInput.value.trim() !== "";
+        console.log('title_check:', title_check);
+    });
 
-
-    // 내용 검증
-        if (contentInput.value.trim() === "") {
-            content_check = false;
-        } else {
-            content_check = true;
-        }
+    contentInput.addEventListener('input', () => {
+        content_check = contentInput.value.trim() !== "";
+        console.log('content_check:', content_check);
+    });
 
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -74,7 +128,7 @@
 
         nicknameInput.addEventListener("input", function () {
             // 초기화
-            nick_check = false;
+            nick_check = true;
             let msg = "";
 
             const nickname = nicknameInput.value;
@@ -177,6 +231,8 @@
         console.log("lower_check:", lower_check);
         console.log("number_check:", number_check);
         console.log("specialChar_check:", specialChar_check);
+        console.log("title_check:", title_check);
+        console.log("content_check:", content_check);
 
         if (content_check && title_check && nick_check && strlen_check && upper_check && lower_check && number_check && specialChar_check) {
             return true;
