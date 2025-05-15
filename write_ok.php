@@ -134,19 +134,24 @@
     
     // 게시글 수정 
     if($db){
-        echo $post_id;
-        if($post_id > 0){
-            echo $post_id;
-            $sql = "UPDATE post SET title = '{$title}', content = '{$content}', nickname = '{$nickname}',`password`='{$password}', updated_at = '{$updated_at}',updated_ip = '{$updated_ip}' WHERE post_id = {$post_id}";
-            $update_result = mysql_query($sql, $db) or die("update err");
-            echo $title, $content, $nickname, $updated_at, $updated_ip,$post_id;
-            // 게시글 작성
+        $sql = "SELECT * FROM post WHERE post_id = {$post_id}";
+        $rs = mysql_query($sql, $db) or die("select err");
+        if(mysql_num_rows($rs) > 0){
+            if($post_id > 0){
+                echo $post_id;
+                $sql = "UPDATE post SET title = '{$title}', content = '{$content}', nickname = '{$nickname}',`password`='{$password}', updated_at = '{$updated_at}',updated_ip = '{$updated_ip}' WHERE post_id = {$post_id}";
+                $update_result = mysql_query($sql, $db) or die("update err");
+                echo $title, $content, $nickname, $updated_at, $updated_ip,$post_id;
+                // 게시글 작성
+            }else{
+                $sql = "INSERT INTO post (title,content,nickname,`password`,created_ip) values ('{$title}','{$content}','{$nickname}','{$password}','{$created_ip}')";
+                $insert_result = mysql_query($sql, $db) or die("insert err");
+            } 
         }else{
-            $sql = "INSERT INTO post (title,content,nickname,`password`,created_ip) values ('{$title}','{$content}','{$nickname}','{$password}','{$created_ip}')";
-            $insert_result = mysql_query($sql, $db) or die("insert err");
-        } 
-    }
+            msgback("해당 게시물이 존재하지 않습니다.");
+        }
         
+    }
 
     // 상세 페이지 이동
     if($insert_result){

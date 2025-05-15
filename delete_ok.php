@@ -5,7 +5,6 @@
 
     $post_id = isset($_GET['post_id']) ? (int)$_GET['post_id'] : 0;
 
-
     if($post_id == 0){
         msgback("삭제할 항목이 존재하지 않습니다.");
     }

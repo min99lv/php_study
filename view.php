@@ -8,21 +8,70 @@
     
     include_once "lib.php";
     $post_id = isset($_GET['post_id']) ? (int)$_GET['post_id'] : 0;
-
+    $page = $_GET['page'];
+    echo $page;
+    echo $post_id;
     if(!$db) $db = db_conn();
-    if($db) {
-        //echo $post_id;
+
+    // post_id 확인
+    if($db){
         $sql = "SELECT * FROM post WHERE post_id = {$post_id}";
-        // $result = mysql_query($sql, $db) or die("insert err");
+        $rs = mysql_query($sql, $db) or die("select err");
+        if(mysql_num_rows($rs) > 0){
+            //echo $post_id;
+            $sql = "SELECT * FROM post WHERE post_id = {$post_id}";
+            // $result = mysql_query($sql, $db) or die("insert err");
 
-        $data = s_data($sql);
-        //print_r($data);
+            $data = s_data($sql);
+            //print_r($data);
 
-        $nickname = $data["nickname"];
-        $title = $data["title"];
-        $content = $data["content"];
-        $created_at = $data["created_at"];
+            $nickname = $data["nickname"];
+            $title = $data["title"];
+            $content = $data["content"];
+            $created_at = $data["created_at"];
+        }else{
+            msgback("해당 게시물이 존재하지 않습니다.");    
+        }
+
     }
+
+
+    $test = 0;
+    $test2 = "";
+    $test3 = NULL;
+    $test4 = false;
+    $test5 = array();
+    if($test===$test2){
+        echo "1<br>";
+    }
+    if($test===$test3){
+        echo "2<br>";
+    }
+    if($test===$test4){
+        echo "3<br>";
+    }
+    if($test2===$test3){
+        echo "4<br>";
+    }
+    if($test2===$test4){
+        echo "5<br>";
+    }
+    if($test3===$test4){
+        echo "6<br>";
+    }
+    if($test===$test5){
+        echo "7<br>";
+    }
+    if($test2==$test5){
+        echo "8<br>";
+    }
+    if($test3===$test5){
+        echo "9<br>";
+    }
+    if($test4===$test5){
+        echo "10<br>";
+    }
+
 ?>
 
 
@@ -37,29 +86,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<!-- modal ex -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-수정하기
-</button>
-
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- modal ex -->
 <body class="bg-light">
     <div class="container py-5">
         <div class="row justify-content-center">
@@ -84,43 +110,42 @@
 
                         <div class="d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-outline-secondary"
-                                onclick="location.href='list.php' ">목록</button>
-                            <!-- <button type="button" class="btn btn-outline-primary"
-                                onclick="location.href='write.php?post_id=<?= $post_id ?>'">수정</button>
-                            <button type="button" class="btn btn-outline-danger"
-                                onclick="location.href='delete_ok.php?post_id=<?= $post_id ?>'">삭제</button> -->
+                                onclick="location.href='list.php?page=<?=$page?>' ">목록</button>
 
-                                <!-- 수정 버튼 -->
-                                <button type="button" class="btn btn-outline-primary" onclick="openModal('update', <?= $post_id ?>)">수정</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="action('update');"
+                                data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                수정
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" onclick="action('delete');"
+                                data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                삭제
+                            </button>
 
-                                <!-- 삭제 버튼 -->
-                                <button type="button" class="btn btn-outline-danger" onclick="openModal('delete', <?= $post_id ?>)">삭제</button>
-
-                                <!-- Modal -->
-                                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">비밀번호 확인</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">비밀번호 확인</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
+                                        <input type="hidden" id="action" name="action">
+                                        <input type="hidden" id="post_id" name="post_id" value="<?= $post_id ?>">
                                         <div class="modal-body">
-                                        <input type="hidden" name="post_id" id="post_id">
-                                        <input type="hidden" name="action" id="action">
-                                        <div class="mb-3">
-                                            <label for="passwordInput" class="form-label">비밀번호</label>
-                                            <input type="password" class="form-control" id="password" name="password" required>
-                                        </div>
+                                            비밀번호 : <input type="password" id="password" name="password">
+                                            <button type="button" class="btn btn-primary"
+                                                onclick="password_check()">확인</button>
                                         </div>
                                         <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                                        <button type="submit" class="btn btn-primary" onclick="password_check()">확인</button>
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">취소</button>
                                         </div>
                                     </div>
                                 </div>
-                                </div>
-                                
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -132,57 +157,47 @@
 
 </html>
 <script>
-    function openModal(action, post_id) {
-        //console.log(post_id);
+    function action(action) {
+        console.log(action);
 
-        document.getElementById('post_id').value = post_id;
-        document.getElementById('action').value = action;
-
-        // Bootstrap 모달 수동 제어
-        const modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
-        modal.show();
+        const actionInput = document.getElementById('action');
+        actionInput.value = action;
     }
 
-    
-    async function password_check() {
+
+    function password_check() {
         const post_id = document.getElementById('post_id').value;
         const password = document.getElementById('password').value;
         const action = document.getElementById('action').value;
 
-        //console.log(post_id);
-        //console.log(password);
-        try {
-            const response = await fetch('/notice_board/password_ok.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ post_id: post_id, password: password })
-            });
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'password_ok.php', true);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send(JSON.stringify({
+            post_id: post_id,
+            password: password
+        }));
 
-            const data = await response.json();
-            console.log(data);
-            if (data == 1) {
-                //alert('패스워드가 일치합니다.');
-                if(action == "update"){
-                    window.location.href = "/notice_board/write.php?post_id="+post_id;
-                }else{
-                    window.location.href = "/notice_board/delete_ok.php?post_id=post_id";
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    var response = JSON.parse(xhr.responseText);
+
+                    if (response == 1) {
+                        if (action == "update") {
+                            window.location.href = "write.php?post_id=" + post_id;
+                        } else {
+                            window.location.href = "delete_ok.php?post_id=" + post_id;
+                        }
+
+                    } else {
+                        alert('패스워드가 일치하지 않습니다.');
+                    }
+                } catch (e) {
+                    console.error("JSON 파싱 오류:", e);
+                    alert('존재하지 않는 게시물입니다.');
                 }
-                
-            } else {
-                alert('패스워드가 일치하지 않습니다.');
             }
-        } catch (error) {
-            console.error('Error:', error);
         }
     }
-           
-
-
-
-
-
-    
-
 </script>
