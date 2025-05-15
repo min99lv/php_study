@@ -104,7 +104,7 @@
     let specialChar_check = false;
     let title_check = false;
     let content_check = false;   
-
+    let password_allcheck = false;
 
     document.addEventListener("DOMContentLoaded", function () {
         
@@ -185,11 +185,14 @@
 
     if (strlen_check && upper_check && lower_check && number_check && specialChar_check) {
         msg += " → 비밀번호 모든 조건 만족";
+        password_allcheck = true;
     } else {
         msg += " → 비밀번호 조건 부족";
     }
 
     passwordCheckMessage.textContent = msg;
+
+    return password_allcheck;
 
     }
 
@@ -204,7 +207,11 @@
 
         title_check = titleInput.value.trim() !== "";
         content_check = contentInput.value.trim() !== "";
-        
+
+        console.log(content_check)
+        console.log(title_check)
+        console.log(nickname_check())
+        console.log(password_check())
 
 
         if (content_check && title_check && nickname_check() && password_check() ) {

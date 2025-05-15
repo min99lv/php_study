@@ -1,46 +1,34 @@
 <?php
     include_once "lib.php";
 
-    $post_id = $_POST['post_id'];
-    $action = $_POST['action'];
-    $password_test = $_POST['password']; 
+    //$json_data = file_get_contents('php://input');
+    //$data = json_decode($json_data, true);
 
-    if($post_id == 0 && $action == ""){
+    $post_id = $data['post_id'];
+
+    $password_test = $data['password']; 
+
+    if($post_id == 0){
         msgback("오류로 인해서 다시 입력해주세요");
     }
     
-    if(!$db) $db = db_conn();
-    
 
+    $status = 0;
+    if(!$db) $db = db_conn();
     if($db){
         $sql = "SELECT `password` FROM post WHERE post_id = {$post_id}";
         $data = s_data($sql);
-
         $password = $data["password"];    
         
         if($password == $password_test){
+            $status = 1;
             
-            // 수정
-            if($action == "update"){
-                movepage("write.php?post_id={$post_id}", "비밀번호 확인이 완료 되었습니다.");
-            } else{
-                movepage("delete_ok.php?post_id={$post_id}", "비밀번호 확인이 완료 되었습니다.");
-            }
-            // 삭제
-        }else{
-            msgback("비밀번호가 틀렸습니다. 다시 입력해주세요.");
         }
-
-
         
-    
+        echo json_encode($status);
     }
 
 
-
-
-    
-
-
 ?>
+
 
