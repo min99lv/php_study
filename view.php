@@ -9,8 +9,8 @@
     include_once "lib.php";
     $post_id = isset($_GET['post_id']) ? (int)$_GET['post_id'] : 0;
     $page = $_GET['page'];
-    echo $page;
-    echo $post_id;
+    //echo $page;
+    //echo $post_id;
     if(!$db) $db = db_conn();
 
     // post_id 확인
@@ -111,7 +111,7 @@
                         <div class="d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-outline-secondary"
                                 onclick="location.href='list.php?page=<?=$page?>' ">목록</button>
-
+                                    
                             <button type="button" class="btn btn-outline-primary" onclick="action('update');"
                                 data-bs-toggle="modal" data-bs-target="#exampleModal">
                                 수정
